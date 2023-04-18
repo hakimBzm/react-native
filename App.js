@@ -16,9 +16,10 @@ const HomeScreen = () => {
           style={styles.input}
           onChangeText={setText}
           value={text}
-          placeholder="Type here"
+          placeholder="TYPE RIGHT HERE"
         />
       </View>
+    
     </View>
   );
 };
@@ -51,15 +52,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    top: -250,
   },
   inputContainer: {
     width: '80%',
     alignItems: 'center',
     justifyContent: 'center',
+    bottom: -275,
+    left: -17,
   },
   input: {
-    height: 40,
+ 
     width: '100%',
     borderWidth: 1,
     padding: 10,
