@@ -19,7 +19,12 @@ const HomeScreen = () => {
           placeholder="TYPE RIGHT HERE"
         />
       </View>
-    
+      <Button style={styles.button1}>
+        onPress={onPressLearnMore}
+        title="Learn More"
+        accessibilityLabel="Learn more about this purple button" 
+      </Button>
+
     </View>
   );
 };
@@ -59,15 +64,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     bottom: -275,
-    left: -17,
+    left: -20,
   },
   input: {
- 
-    width: '100%',
+
+    width: '90%',
     borderWidth: 1,
     padding: 10,
     borderRadius: 10,
   },
+  button1 : {
+    backgroundColor: "#841584",
+  }
 });
 
 export default App;
