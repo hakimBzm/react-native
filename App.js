@@ -1,81 +1,171 @@
 import React, { useState } from 'react';
-import { TextInput, View, StyleSheet, Text } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
+import Mailer from 'react-native-mail';
 
-const Tab = createBottomTabNavigator();
+export default function App() {
+  const [notes, setNotes] = useState([]);
+  const [inputText, setInputText] = useState('');
+  const [deletedNotes, setDeletedNotes] = useState([]);
 
-const HomeScreen = () => {
-  const [text, setText] = useState('');
+  const handleAddNote = () => {
+    if (inputText !== '') {
+      setNotes([...notes, inputText]);
+      setInputText('');
+    }
+  };
+
+  const handleDeleteNote = (index) => {
+    const deletedNote = notes[index];
+    const newNotes = [...notes];
+    newNotes.splice(index, 1);
+    setNotes(newNotes);
+    setDeletedNotes([...deletedNotes, deletedNote]);
+  };
+
+  const handleDeleteAllNotes = () => {
+    setDeletedNotes([]);
+  };
+
+  shareNote = (note) => {
+    Mailer.mail(
+      {
+        subject: 'Ma note',
+        recipients: ['destinataire@exemple.com'],
+        body: note.text,
+      },
+      (error, event) => {
+        if (error) {
+          Alert.alert('Erreur', 'Impossible d\'envoyer l\'e-mail');
+        }
+      }
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ENTER YOUR STUFF HERE</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          onChangeText={setText}
-          value={text}
-          placeholder="TYPE RIGHT HERE"
-        />
+      <Text style={styles.header}>TO DO LIST</Text>
+      <Text style={styles.header}>CLEAN UP YOUR MIND BY CLEANING YOUR TASK</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Ajouter une note..."
+        value={inputText}
+        onChangeText={(text) => setInputText(text)}
+      />
+      <Button title="Ajouter" onPress={handleAddNote} />
+      <View style={styles.notesContainer}>
+        {notes.map((note, index) => (
+          <View key={index} style={styles.noteContainer}>
+            <Text style={styles.noteText}>{note}</Text>
+            <View style={styles.iconsContainer}>
+              <TouchableOpacity onPress={() => handleDeleteNote(index)}>
+                <AntDesign name="delete" size={24} color="red" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => this.shareNote(note)}>
+                <Image
+                  source={require('./assets/enveloppe.png')}
+                  style={styles.icon}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
       </View>
-      <Button style={styles.button1}>
-        onPress={onPressLearnMore}
-        title="Learn More"
-        accessibilityLabel="Learn more about this purple button" 
-      </Button>
-
+      {deletedNotes.length > 0 && (
+        <View style={styles.deletedNotesContainer}>
+          <Text style={styles.deletedNotesHeader}>Corbeille</Text>
+          <TouchableOpacity
+            style={styles.deleteAllButton}
+            onPress={handleDeleteAllNotes}>
+            <Text style={styles.deleteAllButtonText}>Vider la corbeille</Text>
+          </TouchableOpacity>
+          {deletedNotes.map((note, index) => (
+            <View key={index} style={styles.deletedNoteContainer}>
+              <Text style={styles.deletedNoteText}>{note}</Text>
+            </View>
+          ))}
+        </View>
+      )}
     </View>
   );
-};
 
-const SecondScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>SECOND SCREEN</Text>
+        <Text style={styles.header}>Ma ToDoListe</Text>
+        <TextInput
+            style={styles.input}
+            placeholder="ADD THE TASK YOU NEED TO CLEAN UP"
+            value={inputText}
+            onChangeText={(text) => setInputText(text)}
+        />
+        <Button title="Ajouter" onPress={handleAddNote} />
+        {notes.map((note, index) => (
+            <View key={index} style={styles.noteContainer}>
+                <View style={styles.noteContent}>
+                    <Text style={styles.noteText}>{note}</Text>
+                    <TouchableOpacity onPress={() => handleDeleteNote(index)}>
+                        <AntDesign name="delete" size={24} color="red" />
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity onPress={() => shareNote(note)}>
+                    <Image source={require('./assets/enveloppe.png')} style={styles.icon} />
+                </TouchableOpacity>
+            </View>
+        ))}
     </View>
-  );
-};
-
-const App = () => {
-  return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Second" component={SecondScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
-  );
-};
+);
+}
 
 const styles = StyleSheet.create({
-  container: {
+container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
+    backgroundColor: '#fff',
+},
+header: {
+    fontSize: 15,
     fontWeight: 'bold',
-    top: -250,
-  },
-  inputContainer: {
+    marginBottom: 20,
+},
+input: {
     width: '80%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    bottom: -275,
-    left: -20,
-  },
-  input: {
-
-    width: '90%',
+    height: 40,
+    borderColor: 'gray',
     borderWidth: 1,
-    padding: 10,
-    borderRadius: 10,
-  },
-  button1 : {
-    backgroundColor: "#841584",
-  }
+    paddingHorizontal: 10,
+    marginBottom: 10,
+},
+noteContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
+    width: '80%',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginVertical: 5,
+    borderRadius: 5,
+},
+noteContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+},
+noteText: {
+    fontSize: 18,
+    marginRight: 10,
+},
+icon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+},
 });
-
-export default App;
